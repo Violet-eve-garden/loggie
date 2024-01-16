@@ -115,5 +115,6 @@ type Info struct {
 	Epoch        *Epoch
 	R            *RegisterCenter
 	SinkCount    int
-	EventPool    *event.Pool
+	// notes: EventPool
+	EventPool *event.Pool
 }

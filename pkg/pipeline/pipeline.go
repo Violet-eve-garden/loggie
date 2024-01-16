@@ -1127,6 +1127,7 @@ func buildSourceInvokerChain(sourceName string, invoker source.Invoker, intercep
 	if l == 0 {
 		return invoker
 	}
+	// notes: 最后一个invoker为PublishInvoker
 	last := invoker
 
 	var interceptorChainName strings.Builder
@@ -1135,6 +1136,24 @@ func buildSourceInvokerChain(sourceName string, invoker source.Invoker, intercep
 	// sort interceptor
 	sortableInterceptor := source.SortableInterceptor(interceptors)
 	sortableInterceptor.Sort()
+
+	// notes: 构建递归调用链（调用栈）
+	// 以 addhostmeta.interceptor 为例,
+	//func (icp *Interceptor) Intercept(invoker source.Invoker, invocation source.Invocation) api.Result {
+	//	event := invocation.Event
+	//	header := event.Header()
+	//
+	//	metaClone := make(map[string]interface{})
+	//	for k, v := range icp.metadata {
+	//		metaClone[k] = v
+	//	}
+	//	header[icp.config.FieldsName] = metaClone
+	//
+	//	return invoker.Invoke(invocation)
+	//}
+	// 虽然是递归调用Invoke，但是处理逻辑在前，所以interceptor的处理逻辑是顺序的，且最后一个interceptor使用了PublishInvoker
+	//
+	//
 	for i := 0; i < l; i++ {
 		tempInterceptor := sortableInterceptor[l-1-i]
 		if extension, ok := tempInterceptor.(interceptor.Extension); ok {

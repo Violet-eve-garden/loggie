@@ -101,8 +101,12 @@ func (r *Reader) work(index int) {
 			return
 		case job := <-jobs:
 			if ctx, err := NewJobCollectContextAndValidate(job, readBuffer, backlogBuffer); err == nil {
+				// notes: processChain.Process会读取文件，且将当前读取的文件offset的ack占位符添加到文件的ack链中；
 				processChain.Process(ctx)
 			}
+			// notes: 虽然source可以多个worker并发处理job，但是job依然可以保持有序读；
+			// 关键点就在于DecideJob，DecideJob中，Job.Read()把Job又放回了jobs中，
+			// 且每个job对应的都只有一个jobs队列，所以可以实现ack保序
 			r.watcher.DecideJob(job)
 		}
 	}

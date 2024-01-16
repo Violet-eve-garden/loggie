@@ -25,5 +25,7 @@ type ComponentListener interface {
 
 type QueueListener interface {
 	ComponentListener
+	// BeforeQueueConvertBatch
+	// notes: 在将event构造成batch之前，调用的一些前置操作
 	BeforeQueueConvertBatch(events []api.Event)
 }

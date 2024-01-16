@@ -28,5 +28,7 @@ type Config struct {
 	MetricsInterval time.Duration `yaml:"printMetricsInterval,omitempty" default:"1s"`
 
 	// resultStatus can be used to simulate failure, drop
-	ResultStatus string `yaml:"resultStatus,omitempty" default:"success"`
+	ResultStatus string  `yaml:"resultStatus,omitempty" default:"success"`
+	FailedEnable bool    `yaml:"failedEnable,omitempty" default:"false"`
+	FailedRate   float64 `yaml:"failedRate,omitempty" default:"0.1"`
 }

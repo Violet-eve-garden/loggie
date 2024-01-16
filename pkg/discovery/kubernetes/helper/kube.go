@@ -247,6 +247,7 @@ func GenContainerStdoutLog(podLogDirPrefix string, namespace string, podName str
 	return paths
 }
 
+// notes: path: sources.paths
 func findVolumeMountsByPaths(path string, pod *corev1.Pod, containerName string) (volumeName string, volumeMountPath string, subPathExprResult string, err error) {
 	for _, c := range pod.Spec.Containers {
 		if c.Name != containerName {

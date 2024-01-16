@@ -130,6 +130,7 @@ func NewProcessChain(config ReaderConfig) ProcessChain {
 			// do nothing
 		},
 	}
+	// notes: 和interceptors调用链的构造逻辑类似；
 	for i := 0; i < pl; i++ {
 		// Reverse order
 		tempProcessor := processors[pl-1-i]

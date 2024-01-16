@@ -321,7 +321,11 @@ func (w *Watcher) eventBus(e jobEvent) {
 		if e.job.task.config.ReadFromTail {
 			existAckOffset = fileSize
 			w.preAllocationOffset(existAckOffset, job)
+		} else if existAckOffset == 0 {
+			// If not ReadFromTail and existAckOffset is zero, also need to Pre-allocation offset
+			w.preAllocationOffset(existAckOffset, job)
 		}
+
 		// set ack offset
 		job.NextOffset(existAckOffset)
 		// set line number

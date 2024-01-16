@@ -38,6 +38,8 @@ func (al *AckListener) Stop() {
 
 }
 
+// BeforeQueueConvertBatch
+// notes: 在将event构造成batch之前，先用event的SystemState添加ack占位符
 func (al *AckListener) BeforeQueueConvertBatch(events []api.Event) {
 	//log.Info("append events len: %d", len(events))
 	ss := make([]*persistence.State, 0, len(events))

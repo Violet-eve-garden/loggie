@@ -132,6 +132,7 @@ func (d *DbHandler) run() {
 	for {
 		select {
 		case <-d.done:
+			// notes: 退出之前没有持久化ack
 			return
 		case s := <-d.State:
 			buffer = append(buffer, s)
@@ -214,6 +215,8 @@ func (d *DbHandler) write(stats []*State) {
 			log.Warn("The registry record corresponding to stat(%+v) has been deleted, stat will be ignore!", stat)
 		}
 	}
+
+	log.Warn("write registry: %+v", updateRegistries)
 
 	if len(insertRegistries) > 0 {
 		d.insertRegistry(insertRegistries)

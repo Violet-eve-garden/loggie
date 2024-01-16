@@ -25,6 +25,7 @@ import (
 	"github.com/loggie-io/loggie/pkg/pipeline"
 	"github.com/loggie-io/loggie/pkg/sink/codec"
 	"go.uber.org/atomic"
+	"math/rand"
 	"net/http"
 	"sync"
 	"time"
@@ -163,6 +164,10 @@ func (s *Sink) Consume(batch api.Batch) api.Result {
 	l := len(events)
 	if l == 0 {
 		return result.Success()
+	}
+
+	if s.config.FailedEnable && rand.Float64() < s.config.FailedRate {
+		return result.Fail(errors.New("mock failed"))
 	}
 
 	// Simulation failed or discarded batch scenarios

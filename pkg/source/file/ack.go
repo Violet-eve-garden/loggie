@@ -51,6 +51,12 @@ type AckTask struct {
 	persistenceFunc persistenceFunc
 }
 
+// NewAckTask
+// notes:
+//
+//	persistenceFunc: func(state *persistence.State) {
+//							s.dbHandler.State <- state
+//						}
 func NewAckTask(epoch *pipeline.Epoch, pipelineName string, sourceName string, persistenceFunc persistenceFunc) *AckTask {
 	l := log.SubLogger(subLogger+"/ack").Sample(1, 1*time.Second)
 	return &AckTask{
@@ -192,6 +198,12 @@ func (ac *JobAckChain) Append(s *persistence.State) {
 	ac.tail.next = a
 	ac.tail = a
 
+	log.Info("append state(%+v) to ack chain: %+v", s, ac.tail)
+
+	if ac.tail.next.state.LineNumber < ac.tail.state.LineNumber {
+		log.Error("get unordered state, cur state: %+v, next state: %+v", ac.tail.state, ac.tail.next.state)
+	}
+
 	// Check whether the chain is too long
 	l := len(ac.allAck)
 	if l > largeAckSize {
@@ -241,6 +253,8 @@ func (ac *JobAckChain) ackLoop(a *ack) {
 		// release ack
 		ReleaseAck(prev)
 	}
+
+	log.Info("ack prevState: %+v", prevState)
 	// persistence ack
 	ac.persistenceFunc(prevState)
 }
